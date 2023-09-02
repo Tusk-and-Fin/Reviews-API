@@ -10,7 +10,9 @@ const pool = new Pool({
 
 const getReviews = async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM reviews ORDER BY id LIMIT 100');
+    const text = 'SELECT reviews.*, array_agg(reviewPhotos.img_url) as reviewPhotos FROM reviews LEFT JOIN reviewPhotos ON reviews.id = reviewPhotos.review_id GROUP BY reviews.id LIMIT 1';
+    // const result = await pool.query('SELECT * FROM reviews ORDER BY id LIMIT 100');
+    const result = await pool.query(text);
     res.status(200).send(result.rows);
   } catch (error) {
     console.log(error.message);
