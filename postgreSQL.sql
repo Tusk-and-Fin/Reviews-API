@@ -3,15 +3,15 @@ CREATE TABLE reviews(
   id SERIAL PRIMARY KEY,
   product_id INTEGER NOT NULL,
   rating INTEGER NOT NULL,
-  created_date BIGINT,
+  created_date TEXT,
   summary VARCHAR(255) NOT NULL,
   body VARCHAR(1000) NOT NULL,
   recommend BOOLEAN,
-  reported BOOLEAN,
+  reported BOOLEAN DEFAULT FALSE,
   reviewer_name VARCHAR(60) NOT NULL,
   reviewer_email VARCHAR(60) NOT NULL,
   response VARCHAR(1000),
-  helpfulness INTEGER
+  helpfulness INTEGER DEFAULT 0
 );
 
 DROP TABLE IF EXISTS reviewPhotos CASCADE;
@@ -48,16 +48,6 @@ CREATE TABLE charReviews(
         REFERENCES characteristics(id)
 );
 
-DROP TABLE IF EXISTS totalRatings CASCADE;
-CREATE TABLE totalRatings(
-  id SERIAL PRIMARY KEY,
-  one INTEGER,
-  two INTEGER,
-  three INTEGER,
-  four INTEGER,
-  five INTEGER
-);
-
 
 -- -- load csv files into DB
 
@@ -66,17 +56,20 @@ FROM '/Users/patrickalexandre/Desktop/Hack Reactor Main Course/SDC/Reviews-API/d
 DELIMITER ','
 CSV HEADER;
 
+UPDATE reviews
+SET created_date = TO_CHAR(TO_TIMESTAMP(CAST (created_date AS BIGINT) / 1000)::timestamp with time zone AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"');
+
 COPY reviewphotos
 FROM '/Users/patrickalexandre/Desktop/Hack Reactor Main Course/SDC/Reviews-API/data/reviews_photos.csv'
 DELIMITER ','
 CSV HEADER;
 
--- COPY characteristics
--- FROM '/Users/patrickalexandre/Desktop/Hack Reactor Main Course/SDC/Reviews-API/data/characteristics.csv'
--- DELIMITER ','
--- CSV HEADER;
+COPY characteristics
+FROM '/Users/patrickalexandre/Desktop/Hack Reactor Main Course/SDC/Reviews-API/data/characteristics.csv'
+DELIMITER ','
+CSV HEADER;
 
--- COPY charReviews
--- FROM '/Users/patrickalexandre/Desktop/Hack Reactor Main Course/SDC/Reviews-API/data/characteristic_reviews.csv'
--- DELIMITER ','
--- CSV HEADER;
+COPY charReviews
+FROM '/Users/patrickalexandre/Desktop/Hack Reactor Main Course/SDC/Reviews-API/data/characteristic_reviews.csv'
+DELIMITER ','
+CSV HEADER;
