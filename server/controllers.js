@@ -10,7 +10,7 @@ const pool = new Pool({
 
 const getReviews = async (req, res) => {
   try {
-    const text = 'SELECT reviews.*, array_agg(reviewPhotos.img_url) as photos FROM reviews LEFT JOIN reviewPhotos ON reviews.id = reviewPhotos.review_id GROUP BY reviews.id LIMIT 100';
+    const text = 'SELECT reviews.*, array_agg(reviewPhotos.img_url) as photos FROM reviews LEFT JOIN reviewPhotos ON reviews.id = reviewPhotos.review_id GROUP BY reviews.id ORDER BY reviews.id DESC LIMIT 100';
     // const result = await pool.query('SELECT * FROM reviews ORDER BY id LIMIT 100');
     const result = await pool.query(text);
     res.status(200).send(result.rows);
@@ -22,12 +22,14 @@ const getReviews = async (req, res) => {
 const getReviewByText = async (req, res) => {
   try {
     const { text } = req.params;
-    const result = await pool.query('SELECT reviews.*, array_agg(reviewPhotos.img_url) as reviewPhotos FROM reviews LEFT JOIN reviewPhotos ON reviews.id = reviewPhotos.review_id WHERE body LIKE $1 GROUP BY reviews.id ORDER BY id LIMIT 100', ['%' + text + '%']);
+    const result = await pool.query('SELECT reviews.*, array_agg(reviewPhotos.img_url) as reviewPhotos FROM reviews LEFT JOIN reviewPhotos ON reviews.id = reviewPhotos.review_id WHERE body LIKE $1 GROUP BY reviews.id ORDER BY reviews.id DESC LIMIT 100', ['%' + text + '%']);
     res.status(200).send(result.rows);
   } catch (error) {
     console.log(error);
   }
 };
+
+//EXPLAIN ANALYSE SELECT reviews.*, array_agg(reviewPhotos.img_url) as reviewPhotos FROM reviews LEFT JOIN reviewPhotos ON reviews.id = reviewPhotos.review_id WHERE body LIKE '%buy%' GROUP BY reviews.id ORDER BY reviews.id DESC LIMIT 100
 
 const addReview = async (req, res) => {
   try {
