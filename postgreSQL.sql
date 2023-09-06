@@ -76,8 +76,8 @@ CSV HEADER;
 
 -- Create indexes to improve performance
 
-CREATE INDEX idx_reviews_id_body ON reviews(id, body);
 CREATE INDEX idx_reviewphotos_review_id ON reviewphotos(review_id);
+CREATE INDEX idx_reviews_product_id ON reviews(product_id);
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE INDEX reviews_body_idx ON reviews USING gin (body gin_trgm_ops);
