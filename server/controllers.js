@@ -9,10 +9,16 @@ const pool = new Pool({
 });
 
 const getReviews = async (req, res) => {
+  const id = req.query.id;
+  const page = req.query.page || 1;
+  const sort = req.query.sort;
+  const count = req.query.count || 5;
+  const offset = (page - 1) * count;
+
   try {
-    const text = 'SELECT reviews.*, array_agg(reviewPhotos.img_url) as photos FROM reviews LEFT JOIN reviewPhotos ON reviews.id = reviewPhotos.review_id GROUP BY reviews.id ORDER BY reviews.id DESC LIMIT 100';
-    // const result = await pool.query('SELECT * FROM reviews ORDER BY id LIMIT 100');
-    const result = await pool.query(text);
+    const text = 'SELECT reviews.*, array_agg(reviewPhotos.img_url) as photos FROM reviews LEFT JOIN reviewPhotos ON reviews.id = reviewPhotos.review_id WHERE reviews.product_id = $1 GROUP BY reviews.id LIMIT $2 OFFSET $3';
+    const values = [id, count, offset];
+    const result = await pool.query(text, values);
     res.status(200).send(result.rows);
   } catch (error) {
     console.log(error.message);
