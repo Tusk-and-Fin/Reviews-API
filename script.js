@@ -14,7 +14,7 @@ export const options = {
   ],
 };
 
-export default function (){
+export default function () {
   const max = 1000011;
   const min = 900000;
   const productId = Math.floor(Math.random() * (max - min) + min);
@@ -26,6 +26,19 @@ export default function (){
   });
   sleep(1);
 }
+
+// export default function () {
+//   const max = 1000011;
+//   const min = 900000;
+//   const productId = Math.floor(Math.random() * (max - min) + min);
+//   const url = `http://localhost:3000/reviews/search/natus?id=${productId}`;
+//   let res = http.get(url);
+//   check(res, {
+//     'status was 200': (r) => r.status === 200,
+//     // 'reviews contain photos': (r) => r.body.includes('photos'),
+//   });
+//   sleep(1);
+// }
 
 // export default function () {
 //   const data = {

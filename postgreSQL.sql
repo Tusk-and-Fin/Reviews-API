@@ -76,7 +76,6 @@ CSV HEADER;
 
 -- Create indexes to improve performance
 
-CREATE INDEX idx_reviews_id_body ON reviews(id, body);
 CREATE INDEX idx_reviewphotos_review_id ON reviewphotos(review_id);
 CREATE INDEX idx_reviews_product_id ON reviews(product_id);
 

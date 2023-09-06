@@ -26,16 +26,24 @@ const getReviews = async (req, res) => {
 };
 
 const getReviewByText = async (req, res) => {
+  const id = req.query.id;
+  const page = req.query.page || 1;
+  const sort = req.query.sort;
+  const count = req.query.count || 5;
+  const offset = (page - 1) * count;
+
   try {
     const { text } = req.params;
-    const result = await pool.query('SELECT reviews.*, array_agg(reviewPhotos.img_url) as reviewPhotos FROM reviews LEFT JOIN reviewPhotos ON reviews.id = reviewPhotos.review_id WHERE body LIKE $1 GROUP BY reviews.id ORDER BY reviews.id DESC LIMIT 100', ['%' + text + '%']);
+    const query = 'SELECT reviews.*, array_agg(reviewPhotos.img_url) as reviewPhotos FROM reviews LEFT JOIN reviewPhotos ON reviews.id = reviewPhotos.review_id WHERE (reviews.product_id = $1) AND (body LIKE $2) GROUP BY reviews.id LIMIT $3 OFFSET $4';
+    const values = [id, `%${text}%`, count, offset];
+    const result = await pool.query(query, values);
     res.status(200).send(result.rows);
   } catch (error) {
     console.log(error);
   }
 };
 
-//EXPLAIN ANALYSE SELECT reviews.*, array_agg(reviewPhotos.img_url) as reviewPhotos FROM reviews LEFT JOIN reviewPhotos ON reviews.id = reviewPhotos.review_id WHERE body LIKE '%buy%' GROUP BY reviews.id ORDER BY reviews.id DESC LIMIT 100
+//EXPLAIN ANALYSE SELECT reviews.*, array_agg(reviewPhotos.img_url) as reviewPhotos FROM reviews LEFT JOIN reviewPhotos ON reviews.id = reviewPhotos.review_id WHERE (reviews.product_id = 12) AND (body LIKE 'natus') GROUP BY reviews.id LIMIT 5 OFFSET 0;
 
 const addReview = async (req, res) => {
   try {
