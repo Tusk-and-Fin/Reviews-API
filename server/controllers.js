@@ -44,7 +44,7 @@ const getReviewByText = async (req, res) => {
   }
 };
 
-//EXPLAIN ANALYSE SELECT reviews.*, array_agg(reviewPhotos.img_url) as reviewPhotos FROM reviews LEFT JOIN reviewPhotos ON reviews.id = reviewPhotos.review_id WHERE (reviews.product_id = 12) AND (body LIKE 'natus') GROUP BY reviews.id LIMIT 5 OFFSET 0;
+//EXPLAIN ANALYSE INSERT INTO reviews (product_id, rating, created_date, summary, body, recommend, reviewer_name, reviewer_email) VALUES (900000, 5, 1694297930260, 'I liked the product', 'I REALLY REALLY REALLY liked the product', true, 'John Doe', 'firstname@lastname.com') RETURNING id
 
 const addReview = async (req, res) => {
   try {
